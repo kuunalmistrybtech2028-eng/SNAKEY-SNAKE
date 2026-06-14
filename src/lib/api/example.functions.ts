@@ -6,10 +6,7 @@ import { getServerConfig } from "../config.server";
 // Example createServerFn. Server-side handler invoked from the client:
 //   const result = await getGreeting({ data: { name: "Ada" } })
 // The .handler body runs server-only — imports used only inside it (like
-// .server.ts modules) are tree-shaken from the client bundle. Module-level
-// code here still ships to the client; for truly server-only helpers, put
-// them in a .server.ts file. Use this pattern instead of Supabase Edge
-// Functions for server logic.
+// .server.ts modules) are tree-shaken from the client bundle.
 
 export const getGreeting = createServerFn({ method: "POST" })
   .inputValidator(z.object({ name: z.string().min(1) }))

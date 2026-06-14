@@ -7,11 +7,10 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, useState, useCallback, type ReactNode } from "react";
+import { useState, useCallback, type ReactNode } from "react";
 import { IntroSplash } from "@/components/snake/IntroSplash";
 
 import appCss from "../styles.css?url";
-import { reportLovableError } from "../lib/lovable-error-reporting";
 
 function NotFoundComponent() {
   return (
@@ -38,9 +37,6 @@ function NotFoundComponent() {
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
-  useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
-  }, [error]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -80,16 +76,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Snakey Snake" },
       { name: "description", content: "A Classic Snake Game By Kuunal Mistry" },
-      { name: "author", content: "Lovable" },
+      { name: "author", content: "Kuunal Mistry" },
       { property: "og:title", content: "Snakey Snake" },
       { property: "og:description", content: "A Classic Snake Game By Kuunal Mistry" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "Snakey Snake" },
       { name: "twitter:description", content: "A Classic Snake Game By Kuunal Mistry" },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/39298eaa-f6de-48f8-96e4-24cfc247bc47" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/39298eaa-f6de-48f8-96e4-24cfc247bc47" },
     ],
     links: [
       {

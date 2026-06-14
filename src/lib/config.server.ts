@@ -3,9 +3,8 @@ import process from "node:process";
 // Server-only config. The .server.ts suffix prevents Vite from bundling
 // this file into the client — values here never reach the browser.
 //
-// On Cloudflare Workers, env binds at REQUEST time. Module-scope reads
-// (e.g. `const x = process.env.X`) resolve to undefined — always read
-// process.env INSIDE a function or handler.
+// Read process.env inside functions/handlers so values resolve at request time
+// in serverless environments (e.g. Vercel Functions).
 //
 // When to use which env-access pattern:
 //   - .server.ts module (this file): server-only helpers reused across
@@ -19,8 +18,5 @@ import process from "node:process";
 export function getServerConfig() {
   return {
     nodeEnv: process.env.NODE_ENV,
-    // Add server-only values here, e.g.:
-    //   databaseUrl: process.env.DATABASE_URL,
-    //   stripeSecretKey: process.env.STRIPE_SECRET_KEY,
   };
 }
