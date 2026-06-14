@@ -1,0 +1,1 @@
+var e=`snakey:lastSession:v1`;function t(t){if(!(typeof window>`u`))try{localStorage.setItem(e,JSON.stringify(t))}catch{}}function n(){if(typeof window>`u`)return null;try{let t=localStorage.getItem(e);return t?JSON.parse(t):null}catch{return null}}export{t as n,n as t};
