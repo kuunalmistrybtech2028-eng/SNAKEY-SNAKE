@@ -161,6 +161,7 @@ export function GameCanvas({ mode }: { mode: GameMode }) {
     maxCombo: 0,
     glowWave: 0,
     glowWaveColor: "",
+    glowWaveIntensity: 1,
   });
 
   const [levelUps, setLevelUps] = useState<{ level: number; coins: number; box: boolean }[]>([]);
@@ -544,9 +545,14 @@ export function GameCanvas({ mode }: { mode: GameMode }) {
         setScore(s.score);
         const col = fruitColor(kind as FoodKind);
         burstParticles(s, nx, ny, col.glow, kind === "legendary" ? 50 : kind === "diamond" ? 36 : kind === "normal" ? 14 : 24);
-        s.eatPulse = 220;
+        
+        // Scale animation based on fruit rarity
+        const rarityMultiplier = kind === "legendary" ? 2.5 : kind === "diamond" ? 2.0 : kind === "rainbow" || kind === "energy" ? 1.5 : kind === "golden" ? 1.3 : 1.0;
+        s.eatPulse = 220 * rarityMultiplier;
         s.glowWave = s.snake.length;
         s.glowWaveColor = col.glow;
+        s.glowWaveIntensity = rarityMultiplier;
+        
         if (s.settings.sound) (kind === "normal" ? sfx.eat : sfx.rare)(s.settings.soundVolume);
         if (s.settings.haptics) haptic(kind === "normal" ? 14 : [8, 14, 28]);
         if (kind === "normal") {
@@ -804,15 +810,33 @@ export function GameCanvas({ mode }: { mode: GameMode }) {
       const waveIndex = Math.floor(s.glowWave);
       if (waveIndex >= 0 && waveIndex < points.length) {
         const wavePoint = points[waveIndex];
-        const waveIntensity = s.glowWave / s.snake.length;
+        const waveIntensity = (s.glowWave / s.snake.length) * s.glowWaveIntensity;
+        const intensityMultiplier = s.glowWaveIntensity || 1;
+        
         ctx.save();
         ctx.shadowColor = s.glowWaveColor;
-        ctx.shadowBlur = 40 * blurMult * waveIntensity;
+        ctx.shadowBlur = 60 * blurMult * waveIntensity * intensityMultiplier;
         ctx.fillStyle = s.glowWaveColor;
-        ctx.globalAlpha = waveIntensity * 0.8;
+        ctx.globalAlpha = waveIntensity * 0.9;
+        
+        // Main glow wave
         ctx.beginPath();
-        ctx.arc(wavePoint.x, wavePoint.y, s.cell * 0.5 * waveIntensity, 0, Math.PI * 2);
+        ctx.arc(wavePoint.x, wavePoint.y, s.cell * 0.7 * waveIntensity * intensityMultiplier, 0, Math.PI * 2);
         ctx.fill();
+        
+        // Secondary glow rings
+        ctx.strokeStyle = s.glowWaveColor;
+        ctx.lineWidth = 3 * intensityMultiplier;
+        ctx.globalAlpha = waveIntensity * 0.5;
+        ctx.beginPath();
+        ctx.arc(wavePoint.x, wavePoint.y, s.cell * 0.9 * waveIntensity * intensityMultiplier, 0, Math.PI * 2);
+        ctx.stroke();
+        
+        ctx.globalAlpha = waveIntensity * 0.3;
+        ctx.beginPath();
+        ctx.arc(wavePoint.x, wavePoint.y, s.cell * 1.1 * waveIntensity * intensityMultiplier, 0, Math.PI * 2);
+        ctx.stroke();
+        
         ctx.restore();
       }
     }
@@ -821,7 +845,7 @@ export function GameCanvas({ mode }: { mode: GameMode }) {
     const r = s.cell * 0.42;
     
     // Eating animation - head pulses when eatPulse is active
-    const pulseScale = s.eatPulse > 0 ? 1 + (s.eatPulse / 220) * 0.15 : 1;
+    const pulseScale = s.eatPulse > 0 ? 1 + (s.eatPulse / 220) * 0.25 : 1;
     const animatedR = r * pulseScale;
     
     ctx.shadowColor = skin.glow;
