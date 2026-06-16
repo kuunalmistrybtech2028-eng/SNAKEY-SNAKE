@@ -134,7 +134,7 @@ export function IntroSplash({ onComplete }: { onComplete: () => void }) {
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-hidden"
+      className="fixed inset-0 z-[99999] flex flex-col items-center justify-center overflow-hidden bg-black"
       style={{
         opacity: phase === "exit" ? 0 : 1,
         transform: phase === "exit" ? "scale(1.04)" : "scale(1)",

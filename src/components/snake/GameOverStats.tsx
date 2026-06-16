@@ -34,20 +34,20 @@ export function GameOverStats({
     rewards.missionsCompleted.reduce((s, m) => s + m.coins, 0);
 
   return (
-    <div className="absolute inset-0 rounded-2xl flex items-center justify-center bg-background/85 backdrop-blur-lg animate-fade-up overflow-y-auto">
-      <div className="w-full max-w-sm px-5 py-6 space-y-4 my-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/95 backdrop-blur-xl animate-fade-up">
+      <div className="w-full max-w-md px-6 py-8 space-y-5 max-h-screen overflow-y-auto">
         <div className="text-center">
           <div className="text-[10px] uppercase tracking-[0.45em] text-muted-foreground">
             {session.isNewRecord ? "New Record!" : "Run Complete"}
           </div>
-          <div className="text-5xl font-extrabold neon-text animate-title-glow mt-1">{session.score}</div>
-          <div className="text-xs text-muted-foreground mt-1">
+          <div className="text-6xl font-extrabold neon-text animate-title-glow mt-2">{session.score}</div>
+          <div className="text-sm text-muted-foreground mt-2">
             Best {session.best} · {session.mode.replace("-", " ")}
           </div>
         </div>
 
-        <section className="neon-panel rounded-2xl px-4 py-3">
-          <div className="text-[10px] uppercase tracking-widest text-cyan-400 mb-1">Run Stats</div>
+        <section className="neon-panel rounded-2xl px-5 py-4">
+          <div className="text-[10px] uppercase tracking-widest text-cyan-400 mb-2">Run Stats</div>
           <StatRow label="Survival" value={fmtTime(session.survivalMs)} />
           <StatRow label="Snake Length" value={session.snakeLength} />
           <StatRow label="Fruits Eaten" value={session.fruitsEaten} />
@@ -56,8 +56,8 @@ export function GameOverStats({
           <StatRow label="Max Combo" value={`x${session.maxCombo}`} />
         </section>
 
-        <section className="neon-panel rounded-2xl px-4 py-3">
-          <div className="text-[10px] uppercase tracking-widest text-cyan-400 mb-1">Rewards Collected</div>
+        <section className="neon-panel rounded-2xl px-5 py-4">
+          <div className="text-[10px] uppercase tracking-widest text-cyan-400 mb-2">Rewards Collected</div>
           <StatRow label="Total Coins" value={`+${totalCoins}`} />
           <StatRow label="XP Earned" value={`+${rewards.xpEarned}`} />
           {rewards.levelUps.length > 0 && (
@@ -74,11 +74,11 @@ export function GameOverStats({
           )}
         </section>
 
-        <div className="flex flex-col gap-2 pt-1">
-          <button className="neon-btn neon-btn-hover w-full" onClick={onPlayAgain}>
+        <div className="flex flex-col gap-3 pt-2">
+          <button className="neon-btn neon-btn-hover w-full py-3" onClick={onPlayAgain}>
             Play Again
           </button>
-          <Link to="/" className="neon-btn neon-btn-hover w-full text-center">
+          <Link to="/" className="neon-btn neon-btn-hover w-full text-center py-3">
             Home
           </Link>
         </div>

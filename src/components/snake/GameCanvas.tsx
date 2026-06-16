@@ -814,28 +814,35 @@ export function GameCanvas({ mode }: { mode: GameMode }) {
         const intensityMultiplier = s.glowWaveIntensity || 1;
         
         ctx.save();
+        
+        // Main glow wave with intense color
         ctx.shadowColor = s.glowWaveColor;
-        ctx.shadowBlur = 60 * blurMult * waveIntensity * intensityMultiplier;
+        ctx.shadowBlur = 80 * blurMult * waveIntensity * intensityMultiplier;
         ctx.fillStyle = s.glowWaveColor;
-        ctx.globalAlpha = waveIntensity * 0.9;
+        ctx.globalAlpha = waveIntensity * 0.95;
         
-        // Main glow wave
-        ctx.beginPath();
-        ctx.arc(wavePoint.x, wavePoint.y, s.cell * 0.7 * waveIntensity * intensityMultiplier, 0, Math.PI * 2);
-        ctx.fill();
-        
-        // Secondary glow rings
-        ctx.strokeStyle = s.glowWaveColor;
-        ctx.lineWidth = 3 * intensityMultiplier;
-        ctx.globalAlpha = waveIntensity * 0.5;
+        // Large central glow
         ctx.beginPath();
         ctx.arc(wavePoint.x, wavePoint.y, s.cell * 0.9 * waveIntensity * intensityMultiplier, 0, Math.PI * 2);
-        ctx.stroke();
+        ctx.fill();
         
-        ctx.globalAlpha = waveIntensity * 0.3;
+        // Multiple expanding glow rings
+        ctx.strokeStyle = s.glowWaveColor;
+        for (let i = 1; i <= 3; i++) {
+          ctx.lineWidth = 4 * intensityMultiplier;
+          ctx.globalAlpha = waveIntensity * (0.6 - i * 0.15);
+          ctx.beginPath();
+          ctx.arc(wavePoint.x, wavePoint.y, s.cell * (1.0 + i * 0.3) * waveIntensity * intensityMultiplier, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+        
+        // Add bright center core
+        ctx.shadowBlur = 40 * blurMult * intensityMultiplier;
+        ctx.fillStyle = "#ffffff";
+        ctx.globalAlpha = waveIntensity * 0.8;
         ctx.beginPath();
-        ctx.arc(wavePoint.x, wavePoint.y, s.cell * 1.1 * waveIntensity * intensityMultiplier, 0, Math.PI * 2);
-        ctx.stroke();
+        ctx.arc(wavePoint.x, wavePoint.y, s.cell * 0.3 * waveIntensity * intensityMultiplier, 0, Math.PI * 2);
+        ctx.fill();
         
         ctx.restore();
       }
@@ -844,12 +851,27 @@ export function GameCanvas({ mode }: { mode: GameMode }) {
     const head = points[points.length - 1];
     const r = s.cell * 0.42;
     
-    // Eating animation - head pulses when eatPulse is active
-    const pulseScale = s.eatPulse > 0 ? 1 + (s.eatPulse / 220) * 0.25 : 1;
+    // Eating animation - head pulses dramatically when eatPulse is active
+    const pulseScale = s.eatPulse > 0 ? 1 + (s.eatPulse / 220) * 0.35 : 1;
     const animatedR = r * pulseScale;
     
+    // Add extra glow around head when eating
+    if (s.eatPulse > 0) {
+      ctx.save();
+      const eatIntensity = s.eatPulse / 220;
+      ctx.shadowColor = s.glowWaveColor || skin.glow;
+      ctx.shadowBlur = 50 * blurMult * eatIntensity;
+      ctx.strokeStyle = s.glowWaveColor || skin.glow;
+      ctx.lineWidth = 4 * eatIntensity;
+      ctx.globalAlpha = eatIntensity * 0.8;
+      ctx.beginPath();
+      ctx.arc(head.x, head.y, animatedR * 1.3, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    }
+    
     ctx.shadowColor = skin.glow;
-    ctx.shadowBlur = 20 * blurMult;
+    ctx.shadowBlur = 25 * blurMult;
     const hg = ctx.createRadialGradient(head.x - animatedR * 0.3, head.y - animatedR * 0.3, animatedR * 0.1, head.x, head.y, animatedR);
     hg.addColorStop(0, "#ffffff");
     hg.addColorStop(0.4, skin.head);
