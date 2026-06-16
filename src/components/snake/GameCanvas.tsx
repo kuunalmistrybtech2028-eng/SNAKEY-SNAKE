@@ -35,9 +35,29 @@ function pickRareKind(): FoodKind {
   if (r < 0.98) return "diamond";
   return "legendary";
 }
+
+const FRUIT_COLORS = [
+  { main: "#ffd166", glow: "#ffb347" },
+  { main: "#ff6b6b", glow: "#ee5a5a" },
+  { main: "#4ecdc4", glow: "#3db8b0" },
+  { main: "#a78bfa", glow: "#8b5cf6" },
+  { main: "#f472b6", glow: "#ec4899" },
+  { main: "#34d399", glow: "#10b981" },
+  { main: "#fbbf24", glow: "#f59e0b" },
+  { main: "#60a5fa", glow: "#3b82f6" },
+  { main: "#f87171", glow: "#ef4444" },
+  { main: "#a3e635", glow: "#84cc16" },
+  { main: "#c084fc", glow: "#a855f7" },
+  { main: "#fb7185", glow: "#f43f5e" },
+];
+
+let fruitColorIndex = 0;
+
 function fruitColor(k: FoodKind): { main: string; glow: string } {
   switch (k) {
-    case "normal":    return { main: "#ffd166", glow: "#ffb347" };
+    case "normal":    
+      const color = FRUIT_COLORS[fruitColorIndex % FRUIT_COLORS.length];
+      return color;
     case "golden":    return { main: "#fde047", glow: "#facc15" };
     case "diamond":   return { main: "#7df9ff", glow: "#22d3ee" };
     case "rainbow":   return { main: "#ff5ec4", glow: "#7df9ff" };
@@ -139,6 +159,8 @@ export function GameCanvas({ mode }: { mode: GameMode }) {
     shownLevelUps: new Set<number>(),
     notifiedMissions: new Set<string>(),
     maxCombo: 0,
+    glowWave: 0,
+    glowWaveColor: "",
   });
 
   const [levelUps, setLevelUps] = useState<{ level: number; coins: number; box: boolean }[]>([]);
@@ -369,6 +391,7 @@ export function GameCanvas({ mode }: { mode: GameMode }) {
         for (const g of s.trailGhosts) g.life -= dt;
         s.trailGhosts = s.trailGhosts.filter((g) => g.life > 0);
         if (s.eatPulse > 0) s.eatPulse = Math.max(0, s.eatPulse - dt);
+        if (s.glowWave > 0) s.glowWave = Math.max(0, s.glowWave - dt * 0.08);
       }
       render(ctx, s);
     };
@@ -522,9 +545,14 @@ export function GameCanvas({ mode }: { mode: GameMode }) {
         const col = fruitColor(kind as FoodKind);
         burstParticles(s, nx, ny, col.glow, kind === "legendary" ? 50 : kind === "diamond" ? 36 : kind === "normal" ? 14 : 24);
         s.eatPulse = 220;
+        s.glowWave = s.snake.length;
+        s.glowWaveColor = col.glow;
         if (s.settings.sound) (kind === "normal" ? sfx.eat : sfx.rare)(s.settings.soundVolume);
         if (s.settings.haptics) haptic(kind === "normal" ? 14 : [8, 14, 28]);
-        if (kind === "normal") s.food = spawnFood(s.snake, s.cols, s.rows, "normal");
+        if (kind === "normal") {
+          fruitColorIndex++;
+          s.food = spawnFood(s.snake, s.cols, s.rows, "normal");
+        }
         else s.rareFood = null;
         if (!s.rareFood && Math.random() < 0.22) {
           s.rareFood = spawnFood(s.snake, s.cols, s.rows, pickRareKind());
@@ -620,10 +648,10 @@ export function GameCanvas({ mode }: { mode: GameMode }) {
     }
 
     ctx.strokeStyle = th.accent + "73";
-    ctx.lineWidth = Math.max(2, s.cell * 0.08);
+    ctx.lineWidth = Math.max(3, s.cell * 0.1);
     ctx.shadowColor = th.accent;
     ctx.shadowBlur = 18 * blurMult;
-    ctx.strokeRect(1, 1, W - 2, H - 2);
+    ctx.strokeRect(s.cell * 0.5, s.cell * 0.5, W - s.cell, H - s.cell);
     ctx.shadowBlur = 0;
 
     if (s.box) drawBox(ctx, s, s.box);
@@ -771,29 +799,52 @@ export function GameCanvas({ mode }: { mode: GameMode }) {
     ctx.lineWidth = s.cell * 0.18;
     strokePath(ctx, points, s.cell);
 
+    // Draw glow wave effect when fruit is collected
+    if (s.glowWave > 0 && s.glowWaveColor) {
+      const waveIndex = Math.floor(s.glowWave);
+      if (waveIndex >= 0 && waveIndex < points.length) {
+        const wavePoint = points[waveIndex];
+        const waveIntensity = s.glowWave / s.snake.length;
+        ctx.save();
+        ctx.shadowColor = s.glowWaveColor;
+        ctx.shadowBlur = 40 * blurMult * waveIntensity;
+        ctx.fillStyle = s.glowWaveColor;
+        ctx.globalAlpha = waveIntensity * 0.8;
+        ctx.beginPath();
+        ctx.arc(wavePoint.x, wavePoint.y, s.cell * 0.5 * waveIntensity, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
     const head = points[points.length - 1];
     const r = s.cell * 0.42;
+    
+    // Eating animation - head pulses when eatPulse is active
+    const pulseScale = s.eatPulse > 0 ? 1 + (s.eatPulse / 220) * 0.15 : 1;
+    const animatedR = r * pulseScale;
+    
     ctx.shadowColor = skin.glow;
     ctx.shadowBlur = 20 * blurMult;
-    const hg = ctx.createRadialGradient(head.x - r * 0.3, head.y - r * 0.3, r * 0.1, head.x, head.y, r);
+    const hg = ctx.createRadialGradient(head.x - animatedR * 0.3, head.y - animatedR * 0.3, animatedR * 0.1, head.x, head.y, animatedR);
     hg.addColorStop(0, "#ffffff");
     hg.addColorStop(0.4, skin.head);
     hg.addColorStop(1, skin.body);
     ctx.fillStyle = hg;
     ctx.beginPath();
-    ctx.arc(head.x, head.y, r, 0, Math.PI * 2);
+    ctx.arc(head.x, head.y, animatedR, 0, Math.PI * 2);
     ctx.fill();
     ctx.shadowBlur = 0;
 
     const dir = s.dir;
     const perp = { x: -dir.y, y: dir.x };
-    const eyeOff = r * 0.35;
-    const eyeR = r * 0.18;
+    const eyeOff = animatedR * 0.35;
+    const eyeR = animatedR * 0.18;
     const blink = Math.sin(s.timeMs / 1700);
     const blinking = blink > 0.95 ? 0.15 : 1;
     for (const sgn of [-1, 1]) {
-      const ex = head.x + perp.x * eyeOff * sgn + dir.x * r * 0.25;
-      const ey = head.y + perp.y * eyeOff * sgn + dir.y * r * 0.25;
+      const ex = head.x + perp.x * eyeOff * sgn + dir.x * animatedR * 0.25;
+      const ey = head.y + perp.y * eyeOff * sgn + dir.y * animatedR * 0.25;
       ctx.fillStyle = "#0b0420";
       ctx.beginPath();
       ctx.ellipse(ex, ey, eyeR, eyeR * blinking, 0, 0, Math.PI * 2);
@@ -803,7 +854,7 @@ export function GameCanvas({ mode }: { mode: GameMode }) {
       ctx.arc(ex + dir.x * eyeR * 0.3, ey + dir.y * eyeR * 0.3, eyeR * 0.4 * blinking, 0, Math.PI * 2);
       ctx.fill();
     }
-    drawHeadEffect(ctx, s, head, r, blurMult);
+    drawHeadEffect(ctx, s, head, animatedR, blurMult);
   }
 
   function drawHeadEffect(

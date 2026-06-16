@@ -20,25 +20,13 @@ export const HEADS: HeadDef[] = [
 
 export const THEMES: ThemeDef[] = [
   { id: "cyber-grid",      name: "Cyber Grid",      price: 0,    hueA: 195, hueB: 285, hueC: 320, accent: "#7df9ff" },
-  { id: "space-galaxy",    name: "Space Galaxy",    price: 700,  hueA: 260, hueB: 300, hueC: 220, accent: "#a78bfa" },
-  { id: "neon-city",       name: "Neon City",       price: 900,  hueA: 320, hueB: 200, hueC: 280, accent: "#ff5ec4" },
-  { id: "matrix",          name: "Matrix",          price: 1100, hueA: 140, hueB: 160, hueC: 100, accent: "#39ff88" },
-  { id: "deep-ocean",      name: "Deep Ocean",      price: 800,  hueA: 200, hueB: 220, hueC: 240, accent: "#60a5fa" },
-  { id: "volcanic-core",   name: "Volcanic Core",   price: 1300, hueA: 20,  hueB: 0,   hueC: 40,  accent: "#ff7849" },
-  { id: "digital-universe",name: "Digital Universe",price: 1500, hueA: 270, hueB: 180, hueC: 320, accent: "#a78bfa" },
-  { id: "aurora",          name: "Aurora Lights",   price: 1200, hueA: 160, hueB: 280, hueC: 200, accent: "#7df9ff" },
-  { id: "synthwave",       name: "Synthwave Sunset",price: 1400, hueA: 320, hueB: 30,  hueC: 280, accent: "#ff5ec4" },
-  { id: "future-circuit",  name: "Future Circuit",  price: 1000, hueA: 200, hueB: 260, hueC: 180, accent: "#22d3ee" },
-  { id: "candy-land",      name: "Candy Land",      price: 850,  hueA: 320, hueB: 15,  hueC: 280, accent: "#ff5ec4" },
-  { id: "ice-crystal",     name: "Ice Crystal",     price: 950,  hueA: 200, hueB: 220, hueC: 210, accent: "#7ef3ff" },
-  { id: "quantum-realm",   name: "Quantum Realm",   price: 1100, hueA: 270, hueB: 300, hueC: 240, accent: "#b366ff" },
-  { id: "tropical-vibes",  name: "Tropical Vibes",  price: 1050, hueA: 140, hueB: 50,  hueC: 20,  accent: "#ffaa00" },
-  { id: "cosmic-horror",   name: "Cosmic Horror",   price: 1250, hueA: 280, hueB: 260, hueC: 300, accent: "#ff00ff" },
-  { id: "retro-pixel",     name: "Retro Pixel",     price: 800,  hueA: 40,  hueB: 20,  hueC: 60,  accent: "#ffff00" },
-  { id: "electric-storm",  name: "Electric Storm",  price: 1350, hueA: 200, hueB: 250, hueC: 280, accent: "#00ffff" },
-  { id: "inferno-blaze",   name: "Inferno Blaze",   price: 1200, hueA: 10,  hueB: 30,  hueC: 0,   accent: "#ff5500" },
-  { id: "twilight-zone",   name: "Twilight Zone",   price: 1100, hueA: 280, hueB: 320, hueC: 240, accent: "#ff00aa" },
-  { id: "prism-burst",     name: "Prism Burst",     price: 1500, hueA: 0,   hueB: 120, hueC: 240, accent: "#ff00ff" },
+  { id: "midnight-void",   name: "Midnight Void",   price: 500,  hueA: 240, hueB: 270, hueC: 300, accent: "#818cf8" },
+  { id: "sunset-blaze",    name: "Sunset Blaze",    price: 600,  hueA: 10,  hueB: 30,  hueC: 50,  accent: "#fb923c" },
+  { id: "ocean-depths",    name: "Ocean Depths",    price: 550,  hueA: 190, hueB: 210, hueC: 230, accent: "#38bdf8" },
+  { id: "forest-glow",     name: "Forest Glow",     price: 650,  hueA: 120, hueB: 140, hueC: 100, accent: "#4ade80" },
+  { id: "plasma-pulse",    name: "Plasma Pulse",    price: 700,  hueA: 280, hueB: 300, hueC: 260, accent: "#c084fc" },
+  { id: "arctic-frost",    name: "Arctic Frost",    price: 580,  hueA: 180, hueB: 200, hueC: 220, accent: "#67e8f9" },
+  { id: "crimson-dream",   name: "Crimson Dream",   price: 620,  hueA: 340, hueB: 360, hueC: 320, accent: "#f472b6" },
 ];
 
 export function getTrail(id: string): TrailDef { return TRAILS.find(t => t.id === id) ?? TRAILS[0]; }

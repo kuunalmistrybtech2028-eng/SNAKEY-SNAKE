@@ -11,7 +11,7 @@ export function MysteryBoxToast({ reward, onDone }: { reward: BoxReward; onDone:
   }, [onDone]);
 
   return (
-    <div className="pointer-events-none fixed top-20 left-1/2 -translate-x-1/2 z-50 animate-fade-up">
+    <div className="pointer-events-none fixed bottom-8 right-8 z-50 animate-fade-up">
       <div
         className="neon-panel rounded-2xl px-6 py-4 text-center"
         style={{ boxShadow: "0 0 40px rgba(253,224,71,.5), 0 0 120px rgba(255,94,196,.4)" }}

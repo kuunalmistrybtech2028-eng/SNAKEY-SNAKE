@@ -45,20 +45,23 @@ export function IntroSplash({ onComplete }: { onComplete: () => void }) {
 
       ctx.clearRect(0, 0, w, h);
 
+      // Dark neon background
       const bg = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, Math.max(w, h) * 0.75);
-      bg.addColorStop(0, "#12032a");
-      bg.addColorStop(0.45, "#06010f");
+      bg.addColorStop(0, "#1a0a2e");
+      bg.addColorStop(0.45, "#0d021f");
       bg.addColorStop(1, "#000000");
       ctx.fillStyle = bg;
       ctx.fillRect(0, 0, w, h);
 
-      // Perspective grid zoom
+      // Neon grid lines
       ctx.save();
       ctx.translate(w / 2, h * 0.62);
       const gridScale = 1 + elapsed * 0.08;
       ctx.scale(gridScale, gridScale);
-      ctx.strokeStyle = `rgba(125, 249, 255, ${0.06 * warp})`;
+      ctx.strokeStyle = `rgba(255, 0, 255, ${0.08 * warp})`;
       ctx.lineWidth = 1;
+      ctx.shadowColor = "#ff00ff";
+      ctx.shadowBlur = 8;
       for (let i = -12; i <= 12; i++) {
         ctx.beginPath();
         ctx.moveTo(i * 40, -200);
@@ -70,35 +73,56 @@ export function IntroSplash({ onComplete }: { onComplete: () => void }) {
         ctx.stroke();
       }
       ctx.restore();
+      ctx.shadowBlur = 0;
 
-      // Orbiting particles
-      for (let i = 0; i < 24; i++) {
-        const angle = elapsed * 0.5 + (i / 24) * Math.PI * 2;
-        const radius = 120 + Math.sin(elapsed + i) * 40;
-        const px = w / 2 + Math.cos(angle) * radius;
-        const py = h / 2 + Math.sin(angle) * radius * 0.45;
-        const hue = (195 + i * 14 + elapsed * 40) % 360;
-        ctx.fillStyle = `hsla(${hue}, 100%, 70%, ${0.12 * warp})`;
-        ctx.shadowColor = `hsl(${hue}, 100%, 70%)`;
-        ctx.shadowBlur = 12;
+      // Neon snake animation
+      const snakeY = h / 2 + 80;
+      const snakeLength = 12;
+      for (let i = snakeLength - 1; i >= 0; i--) {
+        const segTime = elapsed * 4 - i * 0.12;
+        const segX = w / 2 + Math.sin(segTime) * 120;
+        const segY = snakeY + Math.cos(segTime * 2.5) * 15;
+        const size = i === snakeLength - 1 ? 12 : 8 - i * 0.4;
+        const hue = (280 + i * 15 + elapsed * 50) % 360;
+        ctx.fillStyle = `hsla(${hue}, 100%, 60%, ${(0.6 + i * 0.03) * warp})`;
+        ctx.shadowColor = `hsl(${hue}, 100%, 60%)`;
+        ctx.shadowBlur = 20;
         ctx.beginPath();
-        ctx.arc(px, py, 2 + (i % 3), 0, Math.PI * 2);
+        ctx.arc(segX, segY, size, 0, Math.PI * 2);
         ctx.fill();
       }
       ctx.shadowBlur = 0;
 
-      // Slithering snake underline
-      const snakeY = h / 2 + 100;
-      for (let i = 7; i >= 0; i--) {
-        const segTime = elapsed * 5 - i * 0.14;
-        const segX = w / 2 + Math.sin(segTime) * 100;
-        const segY = snakeY + Math.cos(segTime * 2) * 10;
-        const size = i === 0 ? 7 : 5.5 - i * 0.35;
-        ctx.fillStyle = `rgba(125, 249, 255, ${(0.5 + i * 0.05) * warp})`;
-        ctx.shadowColor = "#7df9ff";
-        ctx.shadowBlur = 10;
+      // Floating neon fruits
+      for (let i = 0; i < 8; i++) {
+        const angle = elapsed * 0.8 + (i / 8) * Math.PI * 2;
+        const radius = 180 + Math.sin(elapsed * 2 + i) * 30;
+        const px = w / 2 + Math.cos(angle) * radius;
+        const py = h / 2 - 50 + Math.sin(angle) * radius * 0.6;
+        const hue = (30 + i * 40 + elapsed * 60) % 360;
+        const pulse = 0.8 + 0.2 * Math.sin(elapsed * 3 + i);
+        const fruitSize = 10 * pulse;
+        ctx.fillStyle = `hsla(${hue}, 100%, 65%, ${0.7 * warp})`;
+        ctx.shadowColor = `hsl(${hue}, 100%, 65%)`;
+        ctx.shadowBlur = 25;
         ctx.beginPath();
-        ctx.arc(segX, segY, size, 0, Math.PI * 2);
+        ctx.arc(px, py, fruitSize, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.shadowBlur = 0;
+
+      // Neon particles
+      for (let i = 0; i < 30; i++) {
+        const angle = elapsed * 0.6 + (i / 30) * Math.PI * 2;
+        const radius = 250 + Math.sin(elapsed + i * 0.5) * 50;
+        const px = w / 2 + Math.cos(angle) * radius;
+        const py = h / 2 + Math.sin(angle) * radius * 0.7;
+        const hue = (180 + i * 12 + elapsed * 30) % 360;
+        ctx.fillStyle = `hsla(${hue}, 100%, 70%, ${0.15 * warp})`;
+        ctx.shadowColor = `hsl(${hue}, 100%, 70%)`;
+        ctx.shadowBlur = 15;
+        ctx.beginPath();
+        ctx.arc(px, py, 2 + (i % 2), 0, Math.PI * 2);
         ctx.fill();
       }
       ctx.shadowBlur = 0;
@@ -155,13 +179,6 @@ export function IntroSplash({ onComplete }: { onComplete: () => void }) {
           BY KUUNAL MISTRY
         </p>
       </div>
-
-      <button
-        onClick={stableComplete}
-        className="absolute bottom-8 z-10 text-xs tracking-[0.3em] uppercase opacity-30 hover:opacity-60 transition-opacity text-white/70 cursor-pointer bg-transparent border-none"
-      >
-        Tap to skip
-      </button>
     </div>
   );
 }

@@ -21,7 +21,7 @@ export function LevelUpToast({ queue, onConsume }: { queue: Reward[]; onConsume:
   if (!show) return null;
 
   return (
-    <div className="pointer-events-none fixed top-20 left-1/2 -translate-x-1/2 z-50 animate-fade-up">
+    <div className="pointer-events-none fixed bottom-8 left-1/2 -translate-x-1/2 z-50 animate-fade-up">
       <div
         className="neon-panel rounded-2xl px-6 py-3 text-center"
         style={{ boxShadow: "0 0 30px rgba(125,249,255,.55), 0 0 80px rgba(167,139,250,.4)" }}
@@ -59,7 +59,7 @@ export function MissionCompleteToast({
   if (!show) return null;
 
   return (
-    <div className="pointer-events-none fixed top-36 left-1/2 -translate-x-1/2 z-50 animate-fade-up">
+    <div className="pointer-events-none fixed bottom-24 left-1/2 -translate-x-1/2 z-50 animate-fade-up">
       <div
         className="neon-panel rounded-2xl px-6 py-3 text-center"
         style={{ boxShadow: "0 0 30px rgba(57,255,136,.45), 0 0 60px rgba(125,249,255,.3)" }}

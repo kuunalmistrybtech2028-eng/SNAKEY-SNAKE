@@ -32,3 +32,9 @@ export function getEffectiveFpsLimit(
   if (setting !== "auto") return setting;
   return detectedHz >= 110 ? 120 : detectedHz >= 85 ? 90 : 60;
 }
+
+/** Force refresh rate detection (call when device capabilities may have changed) */
+export function refreshRateDetection(): Promise<number> {
+  cachedRefreshRate = null;
+  return detectScreenRefreshRate();
+}
