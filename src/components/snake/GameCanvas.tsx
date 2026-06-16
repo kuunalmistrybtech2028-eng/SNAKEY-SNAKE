@@ -805,46 +805,51 @@ export function GameCanvas({ mode }: { mode: GameMode }) {
     ctx.lineWidth = s.cell * 0.18;
     strokePath(ctx, points, s.cell);
 
-    // Draw glow wave effect when fruit is collected
+    // Draw glow wave effect when fruit is collected - travels from head to tail
     if (s.glowWave > 0 && s.glowWaveColor) {
-      const waveIndex = Math.floor(s.glowWave);
-      if (waveIndex >= 0 && waveIndex < points.length) {
-        const wavePoint = points[waveIndex];
-        const waveIntensity = (s.glowWave / s.snake.length) * s.glowWaveIntensity;
-        const intensityMultiplier = s.glowWaveIntensity || 1;
-        
-        ctx.save();
-        
-        // Main glow wave with intense color
-        ctx.shadowColor = s.glowWaveColor;
-        ctx.shadowBlur = 80 * blurMult * waveIntensity * intensityMultiplier;
-        ctx.fillStyle = s.glowWaveColor;
-        ctx.globalAlpha = waveIntensity * 0.95;
-        
-        // Large central glow
-        ctx.beginPath();
-        ctx.arc(wavePoint.x, wavePoint.y, s.cell * 0.9 * waveIntensity * intensityMultiplier, 0, Math.PI * 2);
-        ctx.fill();
-        
-        // Multiple expanding glow rings
-        ctx.strokeStyle = s.glowWaveColor;
-        for (let i = 1; i <= 3; i++) {
-          ctx.lineWidth = 4 * intensityMultiplier;
-          ctx.globalAlpha = waveIntensity * (0.6 - i * 0.15);
+      const intensityMultiplier = s.glowWaveIntensity || 1;
+      
+      // Draw glow on multiple segments for dramatic effect
+      for (let offset = 0; offset < 5; offset++) {
+        const waveIndex = Math.floor(s.glowWave) - offset;
+        if (waveIndex >= 0 && waveIndex < points.length) {
+          const wavePoint = points[waveIndex];
+          const waveIntensity = ((s.glowWave - offset) / s.snake.length) * s.glowWaveIntensity;
+          const segmentIntensity = 1 - (offset * 0.2);
+          
+          ctx.save();
+          
+          // Main glow wave with intense color
+          ctx.shadowColor = s.glowWaveColor;
+          ctx.shadowBlur = 100 * blurMult * waveIntensity * intensityMultiplier * segmentIntensity;
+          ctx.fillStyle = s.glowWaveColor;
+          ctx.globalAlpha = waveIntensity * 0.9 * segmentIntensity;
+          
+          // Large central glow
           ctx.beginPath();
-          ctx.arc(wavePoint.x, wavePoint.y, s.cell * (1.0 + i * 0.3) * waveIntensity * intensityMultiplier, 0, Math.PI * 2);
-          ctx.stroke();
+          ctx.arc(wavePoint.x, wavePoint.y, s.cell * 1.0 * waveIntensity * intensityMultiplier * segmentIntensity, 0, Math.PI * 2);
+          ctx.fill();
+          
+          // Multiple expanding glow rings
+          ctx.strokeStyle = s.glowWaveColor;
+          for (let i = 1; i <= 3; i++) {
+            ctx.lineWidth = 5 * intensityMultiplier;
+            ctx.globalAlpha = waveIntensity * (0.7 - i * 0.2) * segmentIntensity;
+            ctx.beginPath();
+            ctx.arc(wavePoint.x, wavePoint.y, s.cell * (1.2 + i * 0.4) * waveIntensity * intensityMultiplier * segmentIntensity, 0, Math.PI * 2);
+            ctx.stroke();
+          }
+          
+          // Add bright center core
+          ctx.shadowBlur = 50 * blurMult * intensityMultiplier;
+          ctx.fillStyle = "#ffffff";
+          ctx.globalAlpha = waveIntensity * 0.85 * segmentIntensity;
+          ctx.beginPath();
+          ctx.arc(wavePoint.x, wavePoint.y, s.cell * 0.4 * waveIntensity * intensityMultiplier * segmentIntensity, 0, Math.PI * 2);
+          ctx.fill();
+          
+          ctx.restore();
         }
-        
-        // Add bright center core
-        ctx.shadowBlur = 40 * blurMult * intensityMultiplier;
-        ctx.fillStyle = "#ffffff";
-        ctx.globalAlpha = waveIntensity * 0.8;
-        ctx.beginPath();
-        ctx.arc(wavePoint.x, wavePoint.y, s.cell * 0.3 * waveIntensity * intensityMultiplier, 0, Math.PI * 2);
-        ctx.fill();
-        
-        ctx.restore();
       }
     }
 
